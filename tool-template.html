@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Online Tool</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body{
+font-family:Arial;
+text-align:center;
+background:#f4f4f4;
+}
+
+.box{
+margin-top:50px;
+}
+
+input,textarea{
+padding:10px;
+width:80%;
+max-width:400px;
+}
+
+button{
+padding:10px 20px;
+background:#28a745;
+color:white;
+border:none;
+margin-top:10px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="box">
+
+<h2>Online Tool</h2>
+
+<textarea id="text" placeholder="Enter text"></textarea>
+
+<br>
+
+<button onclick="run()">Run Tool</button>
+
+<p id="result"></p>
+
+</div>
+
+<script>
+
+function run(){
+
+let text=document.getElementById("text").value;
+
+document.getElementById("result").innerHTML=text.length+" characters";
+
+}
+
+</script>
+
+</body>
+</html>
