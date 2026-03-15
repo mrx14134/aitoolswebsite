@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Word Counter</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<h2>Word Counter Tool</h2>
+
+<textarea id="text" rows="6" cols="40" placeholder="Type or paste text here"></textarea>
+<br><br>
+
+<button onclick="countWords()">Count Words</button>
+
+<p id="result"></p>
+
+<script>
+function countWords(){
+let text=document.getElementById("text").value;
+let words=text.trim().split(/\s+/).filter(Boolean);
+document.getElementById("result").innerText="Total words: "+words.length;
+}
+</script>
+
+</body>
+</html>
