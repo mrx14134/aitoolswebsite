@@ -52,7 +52,7 @@ let name=file.name
 .replace(".html","")
 .replace(/-/g," ");
 
-let link="https://mrx14134.github.io/aitoolswebsite/"+file.name;
+let link=file.name;
 
 document.getElementById("tools").innerHTML+=
 `<a class="tool" href="${link}">${name}</a>`;
