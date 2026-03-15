@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 
 <title>AI Tools Hub</title>
@@ -10,19 +11,53 @@
 
 body{
 font-family:Arial;
-text-align:center;
 background:#f4f4f4;
+text-align:center;
+}
+
+h1{
+margin-top:20px;
+}
+
+#search{
+padding:10px;
+width:80%;
+max-width:400px;
+margin:20px;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:15px;
+padding:20px;
 }
 
 .tool{
-display:block;
-margin:10px auto;
-padding:12px;
+background:white;
+padding:15px;
+border-radius:8px;
+text-decoration:none;
+color:black;
+box-shadow:0 0 5px rgba(0,0,0,0.2);
+}
+
+.tool:hover{
 background:#28a745;
 color:white;
+}
+
+footer{
+margin-top:40px;
+padding:20px;
+background:#222;
+color:white;
+}
+
+footer a{
+color:white;
+margin:0 10px;
 text-decoration:none;
-border-radius:6px;
-width:260px;
 }
 
 </style>
@@ -33,12 +68,14 @@ width:260px;
 
 <h1>AI Tools Hub</h1>
 
-<div id="tools"></div>
+<input id="search" placeholder="Search tools..." onkeyup="searchTools()">
+
+<div class="grid" id="tools"></div>
 
 <script>
 
-const username = "mrx14134";
-const repo = "aitoolswebsite";
+const username="mrx14134";
+const repo="aitoolswebsite";
 
 fetch(`https://api.github.com/repos/${username}/${repo}/contents`)
 .then(res=>res.json())
@@ -63,14 +100,32 @@ document.getElementById("tools").innerHTML+=
 
 })
 
+function searchTools(){
+
+let input=document.getElementById("search").value.toLowerCase();
+
+let tools=document.getElementsByClassName("tool");
+
+for(let i=0;i<tools.length;i++){
+
+let text=tools[i].innerText.toLowerCase();
+
+tools[i].style.display=text.includes(input)?"block":"none";
+
+}
+
+}
+
 </script>
-<hr>
 
-<h3>Website Pages</h3>
+<footer>
 
-<a href="about.html">About Us</a><br>
-<a href="contact.html">Contact Us</a><br>
-<a href="Privacy.html">Privacy Policy</a><br>
-<a href="Terms.html">Terms & Conditions</a>
+<a href="about.html">About</a>
+<a href="contact.html">Contact</a>
+<a href="Privacy.html">Privacy Policy</a>
+<a href="Terms.html">Terms</a>
+
+</footer>
+
 </body>
 </html>
