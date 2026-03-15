@@ -5,7 +5,7 @@
 <style>
 body{font-family:Arial;text-align:center;background:#f4f4f4}
 h1{margin-top:40px}
-a{
+.tool{
 display:block;
 margin:10px auto;
 padding:12px;
@@ -16,17 +16,33 @@ border-radius:6px;
 width:260px;
 }
 </style>
-</head><body><h1>AI Tools Hub</h1><a href="../caption.html">AI Caption Generator</a>
-<a href="../wordcounter.html">Word Counter</a>
-<a href="../Tip-Calculator.html">Tip Calculator</a>
-<a href="../Weeks-Counter.html">Weeks Counter</a>
-<a href="../Money-Counter.html">Money Counter</a>
-<a href="../binary-translator.html">Binary Translator</a>
-<a href="../csv-to-json-converter.html">CSV to JSON Converter</a>
-<a href="../crypto-average-calculator.html">Crypto Average Calculator</a>
-<a href="../css-button-generator.html">CSS Button Generator</a>
-<a href="../html-to-text-converter.html">HTML to Text Converter</a>
-<a href="../image-to-base64-converter.html">Image to Base64 Converter</a>
+</head><body><h1>AI Tools Hub</h1><div id="tools"></div><script>
 
-</body>
+const username="mrx14134";
+const repo="aitoolswebsite";
+
+fetch(`https://api.github.com/repos/${username}/${repo}/contents`)
+.then(res=>res.json())
+.then(data=>{
+
+data.forEach(file=>{
+
+if(file.name.endsWith(".html") && file.name!=="index.html"){
+
+let name=file.name
+.replace(".html","")
+.replace(/-/g," ");
+
+let link=file.name;
+
+document.getElementById("tools").innerHTML+=
+`<a class="tool" href="../${link}">${name}</a>`;
+
+}
+
+})
+
+})
+
+</script></body>
 </html>
