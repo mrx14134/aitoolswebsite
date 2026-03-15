@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Money Counter</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.3) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: clamp(2rem, 5vw, 3rem);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 1200px;
+            animation: slideIn 0.8s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: clamp(2rem, 4vw, 3rem);
+        }
+
+        .title {
+            font-size: clamp(2.5rem, 8vw, 4rem);
+            font-weight: 900;
+            background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            font-weight: 300;
+        }
+
+        .total-display {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: clamp(1.5rem, 4vw, 2.5rem);
+            text-align: center;
+            margin-bottom: clamp(2rem, 5vw, 3rem);
+            transition: all 0.3s ease;
+        }
+
+        .total-display:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .total-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: clamp(1rem, 3vw, 1.3rem);
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+        }
+
+        .total-amount {
+            font-size: clamp(3rem, 12vw, 5rem);
+            font-weight: 900;
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 50%, #16a34a 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .money-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: clamp(1rem, 3vw, 2rem);
+            margin-bottom: 2rem;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: clamp(1.5rem, 4vw, 2rem);
+            transition: all 0.3s ease;
+        }
+
+        .section:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .section-title {
+            font-size: clamp(1.3rem, 4vw, 1.6rem);
+            font-weight: 700;
+            color: white;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .bill-icon, .coin-icon {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .coin-icon {
+            border-radius: 50%;
+            background: linear-gradient(135deg, #94a3b8, #64748b);
+        }
+
+        .denomination-group {
+            margin-bottom: 1rem;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .denomination-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+        }
+
+        .denomination-value {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.3rem 0.8rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .input-container {
+            position: relative;
+        }
+
+        .money-input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            color: white;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .money-input:focus {
+            border-color: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.15);
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+
+        .money-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .section-total {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .section-total-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .section-total-amount {
+            color: white;
+            font-size: clamp(1.2rem, 4vw, 1.5rem);
+            font-weight: 700;
+        }
+
+        .clear-button {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            max-width: 200px;
+            margin: 2rem auto 0;
+            display: block;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+
+        .clear-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+        }
+
+        .clear-button:active {
+            transform: translateY(0);
+        }
+
+        /* SEO Content Styles */
+        .seo-content {
+            margin-top: 4rem;
+            padding-top: 3rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .overview-section, .faq-section {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .content-title {
+            font-size: clamp(1.8rem, 5vw, 2.5rem);
+            font-weight: 700;
+            color: white;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            background: linear-gradient(135deg, #fff 0%, #e0e0e0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .content-text {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 1.1rem;
+            line-height: 1.7;
+            text-align: justify;
+        }
+
+        .content-text p {
+            margin-bottom: 1.2rem;
+        }
+
+        .content-text p:last-child {
+            margin-bottom: 0;
+        }
+
+        .content-text strong {
+            color: white;
+            font-weight: 600;
+        }
+
+        .faq-item {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: 1rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .faq-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateY(-1px);
+        }
+
+        .faq-question {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: white;
+            padding: 1.2rem 1.5rem;
+            margin: 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .faq-question:hover {
+            color: #4ade80;
+        }
+
+        .faq-answer {
+            padding: 0 1.5rem 1.2rem 1.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .faq-answer p {
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .money-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                margin: 10px;
+            }
+        }
+
+        .pulse {
+            animation: pulse 0.3s ease-in-out;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">Money Counter</h1>
+            <p class="subtitle">Calculate your cash total with precision</p>
+        </div>
+
+        <div class="total-display">
+            <div class="total-label">Total Amount</div>
+            <div class="total-amount" id="totalAmount">$0.00</div>
+        </div>
+
+        <div class="money-grid">
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="bill-icon">💵</span>
+                    Bills
+                </h2>
+                
+                <div class="denomination-group">
+                    <div class="denomination-label">
+                        <span>$100 Bills</span>
+                        <span class="denomination-value">$100.00</span>
+                    </div>
+                    <div class="input-container">
+                        <input type="number" class="money-input" data-value="100" placeholder="0" min="0">
+                    </div>
+                </div>
+
+                <div class="denomination-group">
+                    <div class="denomination-label">
+                        <span>$50 Bills</span>
+                        <span class="denomination-value">$50.00</span>
+                    </div>
+                    <div class="input-container">
+                        <input type="number" class="money-input" data-value="50" placeholder="0" min="0">
+                    </div>
+                </div>
+
+                <div class="denomination-group">
+                    <div class="denomination-label">
+                        <span>$20 Bills</span>
+                        <span class="denomination-value">$20.00</span>
+                    </div>
+                    <div class="input-container">
+                        <input type="number" class="money-input" data-value="20" placeholder="0" min="0">
+                    </div>
+                </div>
+
+                <div class="denomination-group">
+                    <div class="denomination-label">
+                        <span>$10 Bills</span>
+                        <span class="denomination-value">$10.00</span>
+                    </div>
+                    <div class="input-container">
+                        <input type="number" class="money-input" data-value="10" placeholder="0" min="0">
+                    </div>
+                </div>
+
+                <div class="denomination-group">
+                    <div class="denomination-label">
+                        <span>$5 Bills</span>
+                        <span class="denomination-value">$5.00</span>
+                    </div>
+                    <div class="input-container">
+                        <input type="number" class="money-input" data-value="5" placeholder="0" min="0">
+                    </div>
+                </div>
+
+                <div class="denomination-group">
+                    <div class="denomination-label">
+                        <span>$1 Bills</span>
+                        <span class="denomination-value">$1.00</span>
+                    </div>
+                    <div class="input-container">
+                        <input type="number" class="money-input" data-value="1" placeholder="0" min="0">
+                    </div>
+                </div>
+
+                <div class="section-total">
+                    <div class="section-total-label">Bills Total</div>
+                    <div class="section-total-amount" id="billsTotal">$0.00</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="coin-icon">🪙</span>
+                    Coins
+                </h2>
+
+                <div class="denomination-group">
+                    <div class="denomination-label">
+                        <span>Quarters</span>
+                        <span class="denomination-value">$0.25</span>
+                    </div>
+                    <div class="input-container">
+                        <input type="number" class="money-input" data-value="0.25" placeholder="0" min="0">
+                    </div>
+                </div>
+
+                <div class="denomination-group">
+                    <div class="denomination-label">
+                        <span>Dimes</span>
+                        <span class="denomination-value">$0.10</span>
+                    </div>
+                    <div class="input-container">
+                        <input type="number" class="money-input" data-value="0.10" placeholder="0" min="0">
+                    </div>
+                </div>
+
+                <div class="denomination-group">
+                    <div class="denomination-label">
+                        <span>Nickels</span>
+                        <span class="denomination-value">$0.05</span>
+                    </div>
+                    <div class="input-container">
+                        <input type="number" class="money-input" data-value="0.05" placeholder="0" min="0">
+                    </div>
+                </div>
+
+                <div class="denomination-group">
+                    <div class="denomination-label">
+                        <span>Pennies</span>
+                        <span class="denomination-value">$0.01</span>
+                    </div>
+                    <div class="input-container">
+                        <input type="number" class="money-input" data-value="0.01" placeholder="0" min="0">
+                    </div>
+                </div>
+
+                <div class="section-total">
+                    <div class="section-total-label">Coins Total</div>
+                    <div class="section-total-amount" id="coinsTotal">$0.00</div>
+                </div>
+            </div>
+        </div>
+
+        <button class="clear-button" id="clearButton">Clear All</button>
+        
+        <!-- SEO Content Section -->
+        <div class="seo-content">
+            <div class="overview-section">
+                <h2 class="content-title">What is the Money Counter Online Tool?</h2>
+                <div class="content-text">
+                    <p>Our <strong>money counter online</strong> tool is a comprehensive digital calculator designed to help you accurately count and total your cash holdings. This free <strong>money counter</strong> allows you to input the quantity of bills and coins you have, automatically calculating the exact monetary value with precision.</p>
+                    
+                    <p>Whether you're a business owner counting daily receipts, a cashier balancing your register, or simply organizing your personal finances, this money counter tool provides instant, accurate calculations for all U.S. currency denominations. The tool supports all standard bills ($100, $50, $20, $10, $5, $1) and coins (quarters, dimes, nickels, pennies), making it the perfect solution for any cash counting needs.</p>
+                    
+                    <p>Built with a modern, responsive design, our online money counter works seamlessly across all devices - desktop computers, tablets, and smartphones. No downloads or installations required - simply access the tool through your web browser and start counting your money instantly.</p>
+                </div>
+            </div>
+            
+            <div class="faq-section">
+                <h2 class="content-title">Frequently Asked Questions</h2>
+                
+                <div class="faq-item">
+                    <h3 class="faq-question">How does the money counter online tool work?</h3>
+                    <div class="faq-answer">
+                        <p>Simply enter the number of each bill and coin denomination in the respective input fields. The money counter automatically calculates the total value in real-time as you type, providing separate totals for bills and coins, plus a grand total.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <h3 class="faq-question">Is this money counter tool free to use?</h3>
+                    <div class="faq-answer">
+                        <p>Yes, our money counter is completely free to use. There are no hidden fees, subscriptions, or registration requirements. Access the tool anytime through your web browser without any cost.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <h3 class="faq-question">What currency denominations does the money counter support?</h3>
+                    <div class="faq-answer">
+                        <p>The money counter supports all standard U.S. currency: $100, $50, $20, $10, $5, and $1 bills, plus quarters ($0.25), dimes ($0.10), nickels ($0.05), and pennies ($0.01).</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <h3 class="faq-question">Can I use this money counter for business purposes?</h3>
+                    <div class="faq-answer">
+                        <p>Absolutely! This money counter online tool is perfect for businesses, including retail stores, restaurants, banks, and any establishment handling cash transactions. It's ideal for end-of-day reconciliation, register counting, and financial reporting.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <h3 class="faq-question">Does the money counter work on mobile devices?</h3>
+                    <div class="faq-answer">
+                        <p>Yes, the money counter is fully responsive and optimized for mobile devices, tablets, and desktop computers. The interface adapts to your screen size for optimal usability on any device.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <h3 class="faq-question">How accurate is the money counter calculation?</h3>
+                    <div class="faq-answer">
+                        <p>The money counter provides 100% accurate calculations using precise mathematical algorithms. All totals are calculated to the penny and displayed in standard currency format ($X.XX).</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <h3 class="faq-question">Can I save or print my money counting results?</h3>
+                    <div class="faq-answer">
+                        <p>While the current version doesn't include save/print functionality, you can easily screenshot the results or manually record the totals. The clear layout makes it simple to document your cash count.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <h3 class="faq-question">What happens if I make a mistake while entering numbers?</h3>
+                    <div class="faq-answer">
+                        <p>You can easily correct mistakes by clicking on any input field and changing the number. The money counter recalculates automatically. You can also use the "Clear All" button to start over completely.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <h3 class="faq-question">Is there a limit to how much money I can count?</h3>
+                    <div class="faq-answer">
+                        <p>No, there's no practical limit. The money counter can handle any quantity of bills and coins, making it suitable for large cash counts, bank deposits, or business reconciliation of any size.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <h3 class="faq-question">Who can benefit from using this money counter tool?</h3>
+                    <div class="faq-answer">
+                        <p>Anyone handling cash can benefit: retail cashiers, restaurant managers, bank tellers, small business owners, event organizers, fundraisers, personal finance enthusiasts, and anyone who needs to count money accurately and efficiently.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class MoneyCounter {
+            constructor() {
+                this.inputs = document.querySelectorAll('.money-input');
+                this.totalAmount = document.getElementById('totalAmount');
+                this.billsTotal = document.getElementById('billsTotal');
+                this.coinsTotal = document.getElementById('coinsTotal');
+                this.clearButton = document.getElementById('clearButton');
+                
+                this.init();
+            }
+
+            init() {
+                this.inputs.forEach(input => {
+                    input.addEventListener('input', () => this.calculateTotal());
+                    input.addEventListener('focus', (e) => this.handleFocus(e));
+                });
+
+                this.clearButton.addEventListener('click', () => this.clearAll());
+                
+                // Initial calculation
+                this.calculateTotal();
+            }
+
+            handleFocus(e) {
+                e.target.select();
+            }
+
+            calculateTotal() {
+                let billsSum = 0;
+                let coinsSum = 0;
+                let grandTotal = 0;
+
+                this.inputs.forEach(input => {
+                    const quantity = parseFloat(input.value) || 0;
+                    const value = parseFloat(input.dataset.value);
+                    const subtotal = quantity * value;
+
+                    grandTotal += subtotal;
+
+                    // Determine if it's a bill or coin based on value
+                    if (value >= 1) {
+                        billsSum += subtotal;
+                    } else {
+                        coinsSum += subtotal;
+                    }
+                });
+
+                // Update displays with animation
+                this.animateUpdate(this.totalAmount, grandTotal);
+                this.animateUpdate(this.billsTotal, billsSum);
+                this.animateUpdate(this.coinsTotal, coinsSum);
+            }
+
+            animateUpdate(element, amount) {
+                const formattedAmount = this.formatCurrency(amount);
+                
+                if (element.textContent !== formattedAmount) {
+                    element.classList.add('pulse');
+                    element.textContent = formattedAmount;
+                    
+                    setTimeout(() => {
+                        element.classList.remove('pulse');
+                    }, 300);
+                }
+            }
+
+            formatCurrency(amount) {
+                return new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                    minimumFractionDigits: 2
+                }).format(amount);
+            }
+
+            clearAll() {
+                this.inputs.forEach(input => {
+                    input.value = '';
+                });
+                
+                // Add animation to clear button
+                this.clearButton.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.clearButton.style.transform = 'scale(1)';
+                }, 150);
+                
+                this.calculateTotal();
+            }
+        }
+
+        // Initialize the money counter when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new MoneyCounter();
+        });
+
+        // Add some interactive background elements
+        function createFloatingElements() {
+            const container = document.body;
+            
+            for (let i = 0; i < 5; i++) {
+                const element = document.createElement('div');
+                element.style.cssText = `
+                    position: absolute;
+                    width: ${Math.random() * 100 + 50}px;
+                    height: ${Math.random() * 100 + 50}px;
+                    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+                    border-radius: 50%;
+                    pointer-events: none;
+                    animation: float ${Math.random() * 20 + 20}s infinite linear;
+                    left: ${Math.random() * 100}%;
+                    top: ${Math.random() * 100}%;
+                    z-index: -1;
+                `;
+                container.appendChild(element);
+            }
+        }
+
+        // Add floating animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes float {
+                0% { transform: translateY(0px) rotate(0deg); opacity: 0; }
+                10% { opacity: 1; }
+                90% { opacity: 1; }
+                100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        createFloatingElements();
+    </script>
+</body>
+</html>
