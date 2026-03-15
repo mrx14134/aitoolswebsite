@@ -40,7 +40,7 @@ width:260px;
 const username = "mrx14134";
 const repo = "aitoolswebsite";
 
-fetch(`https://api.github.com/repos/${username}/${repo}/contents/docs`)
+fetch(`https://api.github.com/repos/${username}/${repo}/contents`)
 .then(res=>res.json())
 .then(data=>{
 
@@ -52,7 +52,7 @@ let name=file.name
 .replace(".html","")
 .replace(/-/g," ");
 
-let link="https://mrx14134.github.io/aitoolswebsite/docs/"+file.name;
+let link="https://mrx14134.github.io/aitoolswebsite/"+file.name;
 
 document.getElementById("tools").innerHTML+=
 `<a class="tool" href="${link}">${name}</a>`;
