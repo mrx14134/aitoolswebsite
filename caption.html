@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>AI Caption Generator</title>
+</head>
+
+<body>
+
+<h2>AI Caption Generator</h2>
+
+<input type="text" id="topic" placeholder="Enter topic">
+<br><br>
+
+<button onclick="generate()">Generate Caption</button>
+
+<p id="result"></p>
+
+<script>
+function generate(){
+let topic = document.getElementById("topic").value;
+
+let captions = [
+"🔥 Amazing " + topic + " vibes!",
+"✨ Loving this " + topic + " moment!",
+"🚀 Next level " + topic + " energy!",
+"💯 Pure " + topic + " goals!"
+];
+
+let random = captions[Math.floor(Math.random()*captions.length)];
+
+document.getElementById("result").innerText = random;
+}
+</script>
+
+</body>
+</html>
